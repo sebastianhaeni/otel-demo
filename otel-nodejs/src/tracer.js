@@ -9,7 +9,7 @@ diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.WARN);
 const {AlwaysOnSampler} = require("@opentelemetry/core");
 const {registerInstrumentations} = require("@opentelemetry/instrumentation");
 const {NodeTracerProvider} = require("@opentelemetry/sdk-trace-node");
-const {BatchSpanProcessor} = require("@opentelemetry/sdk-trace-base");
+const {SimpleSpanProcessor} = require("@opentelemetry/sdk-trace-base");
 const {Resource} = require("@opentelemetry/resources");
 const {
   SemanticAttributes,
@@ -41,15 +41,15 @@ module.exports = (serviceName) => {
     ],
   });
 
-  const collectorOptions = {
-    url: "http://localhost:4318/v1/traces", // url is optional and can be omitted - default is http://localhost:55681/v1/traces
+  const traceExporterOptions = {
+    url: "http://localhost:4318/v1/traces",
     headers: {}, // an optional object containing custom headers to be sent with each request
     concurrencyLimit: 10, // an optional limit on pending requests
   };
 
-  const traceExporter = new OTLPTraceExporter(collectorOptions);
+  const traceExporter = new OTLPTraceExporter(traceExporterOptions);
 
-  provider.addSpanProcessor(new BatchSpanProcessor(traceExporter));
+  provider.addSpanProcessor(new SimpleSpanProcessor(traceExporter));
 
   // Initialize the OpenTelemetry APIs to use the NodeTracerProvider bindings
   provider.register();
