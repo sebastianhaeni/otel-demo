@@ -6,3 +6,7 @@ datasources:
     isDefault: true
     access: proxy
     editable: true
+  - name: Jaeger
+    type: jaeger
+    url: http://jaeger:16686
+    editable: true
