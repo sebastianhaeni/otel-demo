@@ -1,16 +1,14 @@
 version: '3'
 services:
 
-  # See https://www.jaegertracing.io/docs/1.33/getting-started/#all-in-one
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    environment:
-      METRICS_STORAGE_TYPE: prometheus
-      PROMETHEUS_SERVER_URL: http://prometheus:9090
-    ports:
-      - "16686:16686" # Web Frontend
-      - "14250:14250" # HTTP Accept model.proto
-      - "14269:14269" # HTTP Health Check at / and metrics at /metrics
+  # Microservice Simulator
+  microsim:
+    image: microsim
+    volumes:
+      - ./microsim.config.json:/microsim.config.json
+    command: "-j http://otel-collector:14278/api/traces -d 24h -s 500ms -c /microsim.config.json"
+    depends_on:
+      - otel-collector
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.53.0
@@ -26,6 +24,17 @@ services:
       - "13133:13133" # Collector Health Check
     depends_on:
       - jaeger
+
+  # See https://www.jaegertracing.io/docs/1.33/getting-started/#all-in-one
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      METRICS_STORAGE_TYPE: prometheus
+      PROMETHEUS_SERVER_URL: http://prometheus:9090
+    ports:
+      - "16686:16686" # Web Frontend
+      - "14250:14250" # HTTP Accept model.proto
+      - "14269:14269" # HTTP Health Check at / and metrics at /metrics
 
   prometheus:
     image: prom/prometheus:latest
@@ -47,10 +56,3 @@ services:
       - "3001:3001"
     depends_on:
       - prometheus
-
-  # Microservice Simulator
-#  microsim:
-#    image: yurishkuro/microsim:latest
-#    command: "-j http://otel-collector:14278/api/traces -d 24h -s 500ms"
-#    depends_on:
-#      - otel-collector

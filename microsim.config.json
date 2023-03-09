@@ -1,0 +1,103 @@
+{
+  "TestName": "",
+  "TestDuration": 0,
+  "TestRunners": 0,
+  "Repeats": 0,
+  "SleepBetweenRequests": 0,
+  "Services": [
+    {
+      "Name": "ui",
+      "Count": 1,
+      "Endpoints": [
+        {
+          "Name": "/",
+          "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0},
+          "Depends": {"Service": {"Name": "frontend", "Endpoint": "/dispatch"}}
+        }
+      ]
+    },
+    {
+      "Name": "frontend",
+      "Count": 1,
+      "Endpoints": [
+        {
+          "Name": "/dispatch",
+          "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0},
+          "Depends": {
+            "Seq": [
+              {"Service": {"Name": "customer", "Endpoint": "/customer"}},
+              {"Service": {"Name": "driver", "Endpoint": "/FindNearest"}},
+              {"Par": {"MaxPar": 3 ,"Items": [
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}},
+                {"Service": {"Name": "route", "Endpoint": "/GetShortestRoute"}}
+              ]}}
+            ]
+          }
+        }
+    ]},
+    {
+      "Name": "customer",
+      "Count": 1,
+      "Endpoints": [
+        {
+          "Name": "/customer",
+          "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0},
+          "Depends": {"Seq": [{"Service": {"Name": "mysql", "Endpoint": "/sql_select"}}]}
+        }
+      ]
+    },
+    {
+      "Name": "driver",
+      "Count": 2,
+      "Endpoints": [
+        {
+          "Name": "/FindNearest",
+          "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0},
+          "Depends": {
+            "Seq": [
+              {"Service": {"Name": "redis", "Endpoint": "/FindDriverIDs"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}},
+              {"Service": {"Name": "redis", "Endpoint": "/GetDriver"}}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "Name": "route",
+      "Count": 3,
+      "Endpoints": [{"Name": "/GetShortestRoute", "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0}}]
+    },
+    {
+      "Name": "mysql",
+      "Count": 1,
+      "Endpoints": [
+        {"Name": "/sql_select", "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0}}
+      ]
+    },
+    {
+      "Name": "redis",
+      "Count": 1,
+      "Endpoints": [
+        {"Name": "/FindDriverIDs", "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0}},
+        {"Name": "/GetDriver", "Perf": {"Latency": {"Mean": 15000000, "StdDev": 3000000}, "FailureRate": 0.05}}
+      ]
+    }
+  ]
+}
