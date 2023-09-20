@@ -5,20 +5,22 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>3.1.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>ch.sebastianhaeni</groupId>
     <artifactId>otel-springboot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>otel-springboot</name>
     <description>Demo project with OpenTelemetry instrumentation for Spring Boot</description>
+
     <properties>
-        <java.version>17</java.version>
-        <spring-cloud.version>2021.0.3</spring-cloud.version>
-        <opentelemetry-bom.version>1.20.1</opentelemetry-bom.version>
-        <opentelemetry-java-instrumentation.version>1.20.2</opentelemetry-java-instrumentation.version>
+        <java.version>19</java.version>
+        <micrometer-tracing.version>1.1.5</micrometer-tracing.version>
+        <opentelemetry-bom.version>1.30.1</opentelemetry-bom.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -29,8 +31,19 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-sleuth</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Tracing -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-otel</artifactId>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
@@ -38,31 +51,17 @@
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-extension-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.13</version>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-tracing-bom</artifactId>
+                <version>${micrometer-tracing.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -82,31 +81,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <fork>true</fork>
-                    <skip>false</skip>
                     <mainClass>ch.sebastianhaeni.otelspringboot.OtelSpringbootApplication</mainClass>
-                    <argLine>
-                        -javaagent:${project.build.directory}/agent/opentelemetry-javaagent.jar
-                        -Dotel.resource.attributes=service.name=${project.artifactId}
-                    </argLine>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <executions>
-                    <execution>
-                        <id>install-opentelemetry-agent</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <url>https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${opentelemetry-java-instrumentation.version}/opentelemetry-javaagent.jar</url>
-                    <outputDirectory>${project.build.directory}/agent</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

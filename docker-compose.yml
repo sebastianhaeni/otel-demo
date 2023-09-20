@@ -2,13 +2,13 @@ version: '3'
 services:
 
   # Microservice Simulator
-  microsim:
-    image: microsim
-    volumes:
-      - ./microsim.config.json:/microsim.config.json
-    command: "-j http://otel-collector:14278/api/traces -d 24h -s 500ms -c /microsim.config.json"
-    depends_on:
-      - otel-collector
+#  microsim:
+#    image: yurishkuro/microsim
+#    volumes:
+#      - ./microsim.config.json:/microsim.config.json
+#    command: "-j http://otel-collector:14278/api/traces -d 24h -s 500ms -c /microsim.config.json"
+#    depends_on:
+#      - otel-collector
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.53.0
